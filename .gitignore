@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# Distributions and packaging
+.Python
+build/
+dist/
+*.egg
+*.whl
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS-specific files
+.DS_Store
+.Trashes
+Thumbs.db
+
+# Django specific
+*.log
+*.pot
+*.mo
+local_settings.py
+db.sqlite3
+/media
+/static
+
+# Environment variables
+.env

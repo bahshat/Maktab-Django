@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Fees</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding-bottom: 70px; /* Space for fixed bottom nav */ }
+        .container { padding: 20px; }
+        ul { list-style: none; padding: 0; }
+        li { background-color: #f9f9f9; margin-bottom: 10px; padding: 10px; border-radius: 4px; border: 1px solid #ddd; }
+        a { display: block; margin-top: 10px; color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+        }
+        .bottom-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            text-align: center;
+            flex-grow: 1;
+            font-size: 0.8em;
+        }
+        .bottom-nav a:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Students with Pending Fees</h1>
+        {% if pending_students %}
+            <ul>
+                {% for student in pending_students %}
+                    <li>
+                        <a href="{% url 'student_detail' student.roll_number %}">
+                            {{ student.name }} (Roll No: {{ student.roll_number }})
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No students with pending fees.</p>
+        {% endif %}
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'search_student' %}">Search</a>
+        <a href="{% url 'add_student' %}">Add Student</a>
+        <a href="{% url 'pending_fees_list' %}">Pending</a>
+        <a href="{% url 'due_soon_fees_list' %}">Due Soon</a>
+    </div>
+</body>
+</html>

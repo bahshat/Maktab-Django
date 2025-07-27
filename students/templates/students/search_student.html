@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Student</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding-bottom: 70px; /* Space for fixed bottom nav */ }
+        .container { padding: 20px; }
+        form { margin-bottom: 20px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
+        button:hover { background-color: #45a049; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+        }
+        .bottom-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            text-align: center;
+            flex-grow: 1;
+            font-size: 0.8em;
+        }
+        .bottom-nav a:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Student by Roll Number</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_roll_number">Roll Number:</label>
+            <input type="number" name="roll_number" id="id_roll_number" required>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if message %}
+            <p style="color: red;">{{ message }}</p>
+        {% endif %}
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'search_student' %}">Search</a>
+        <a href="{% url 'add_student' %}">Add Student</a>
+        <a href="{% url 'pending_fees_list' %}">Pending</a>
+        <a href="{% url 'due_soon_fees_list' %}">Due Soon</a>
+    </div>
+</body>
+</html>
