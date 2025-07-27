@@ -6,7 +6,7 @@ SECRET_KEY = 'your-secret-key'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # WARNING: Only for development/local network testing. DO NOT use in production!
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -72,7 +72,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
+
+USE_TZ = True
 
 USE_I18N = True
 
