@@ -158,6 +158,6 @@ def dashboard(request):
         'paid_up_students_count': paid_up_students_count,
         'chart_labels': ['Pending', 'Due Soon', 'Paid Up'],
         'chart_data': [pending_students_count, due_soon_students_count, paid_up_students_count],
-        'chart_colors': ['#FF6384', '#FFCE56', '#4CAF50'], # Pending (Red), Due Soon (Yellow), Paid Up (Green) # Pending (Red), Due Soon (Yellow), Paid Up (Green)
+        'chart_colors': ['#FF6384', '#FFCE56', '#4CAF50'], # Pending (Red), Due Soon (Yellow), Paid Up (Green) # Pending (Red), Due Soon (Yellow), Paid Up (Green) # Pending (Red), Due Soon (Yellow), Paid Up (Green)
     }
     return render(request, 'students/dashboard.html', context)
