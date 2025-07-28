@@ -21,8 +21,9 @@
     <div class="card">
         <h2>Fee Status</h2>
         <p><strong>Status:</strong> {{ fee_status }}</p>
-        <p><strong>Amount:</strong> {{ fee_amount }}</p>
-        {% if fee_status == "Pending" %}
+        <p><strong>Amount:</strong> ₹{{ fee_amount }}</p>
+        {% if total_pending_months and total_pending_months > 0 %}
+            <p><strong>Pending for:</strong> {{ total_pending_months }} Months</p>
             <p><strong>Period:</strong> {{ from_date|date:"M d, Y" }} to {{ to_date|date:"M d, Y" }}</p>
         {% endif %}
     </div>

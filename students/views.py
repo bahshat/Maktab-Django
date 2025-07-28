@@ -154,13 +154,23 @@ def fees_info(request, roll_number):
 
     # Check for pending fees
     pending_periods, pending_amount = calculate_pending_periods(student, today)
+    
+    # Calculate total_pending_months_display based on pending_periods and fees_period
+    total_pending_months_display = 0
+    if pending_periods > 0:
+        months_per_period = {
+            'monthly': 1,
+            'quarterly': 3,
+            'half_yearly': 6,
+            'yearly': 12,
+        }[student.fees_period]
+        total_pending_months_display = pending_periods * months_per_period
+
     from_date = None
     to_date = None
 
-    # Check for pending fees
-    pending_periods, pending_amount = calculate_pending_periods(student, today)
     if pending_amount > 0:
-        fee_status = f"Pending: {pending_periods} periods"
+        fee_status = f"Pending for {total_pending_months_display} Months"
         fee_amount = pending_amount
 
         if student.paid_till_date is None:
@@ -198,6 +208,7 @@ def fees_info(request, roll_number):
         'payments': payments,
         'from_date': from_date,
         'to_date': to_date,
+        'total_pending_months': total_pending_months_display,
     })
 
 @login_required
