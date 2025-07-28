@@ -1,84 +1,98 @@
 from django.core.management.base import BaseCommand
-from students.models import Student
+from students.models import Student, Payment
 from datetime import date, timedelta
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
+
+MONTHLY_FEE = 400
 
 class Command(BaseCommand):
-    help = 'Populates the database with sample student data for testing.'
+    help = 'Populates the database with sample student data and initial payment records.'
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Populating student data...'))
 
         # Clear existing data to avoid duplicates on repeated runs
+        Payment.objects.all().delete() # Delete payments first due to ForeignKey
         Student.objects.all().delete()
 
-        students_data = [
-            # Student with no fees paid yet (paid_till_date is None)
+        today = timezone.now().date()
+
+        students_initial_config = [
+            # Student admitted 6 months ago, paid for 4 months (2 months pending)
             {
-                'roll_number': 1001,
-                'name': 'Alice Smith',
-                'phone_number': 9876543210,
-                'student_class': 5,
-                'address': '123 Main St',
-                'paid_till_date': None
-            },
-            # Student with fees pending (paid_till_date in the past)
-            {
-                'roll_number': 1002,
                 'name': 'Bob Johnson',
                 'phone_number': 9876543211,
                 'student_class': 7,
                 'address': '456 Oak Ave',
-                'paid_till_date': date.today() - timedelta(days=30)
+                'admission_offset_months': 6, # Admitted 6 months ago
+                'initial_months_paid': 4 # Paid for 4 months from admission
             },
-            # Student with fees due soon (paid_till_date in the next 7 days)
+            # Student admitted 3 months ago, paid for 3 months (due today)
             {
-                'roll_number': 1003,
                 'name': 'Charlie Brown',
                 'phone_number': 9876543212,
                 'student_class': 6,
                 'address': '789 Pine Ln',
-                'paid_till_date': date.today() + timedelta(days=5)
+                'admission_offset_months': 3,
+                'initial_months_paid': 3
             },
-            # Student with fees paid up to date (paid_till_date is today)
+            # Student admitted 1 month ago, paid for 2 months (paid till next month)
             {
-                'roll_number': 1004,
                 'name': 'Diana Prince',
                 'phone_number': 9876543213,
                 'student_class': 8,
                 'address': '101 Hero Way',
-                'paid_till_date': date.today()
+                'admission_offset_months': 1,
+                'initial_months_paid': 2
             },
-            # Student with fees paid in the future (not pending, not due soon)
+            # Student admitted today, paid for 1 month
             {
-                'roll_number': 1005,
                 'name': 'Eve Adams',
                 'phone_number': 9876543214,
                 'student_class': 9,
                 'address': '202 Future Rd',
-                'paid_till_date': date.today() + timedelta(days=60)
+                'admission_offset_months': 0,
+                'initial_months_paid': 1
             },
-            # Another pending student
+            # Another pending student (admitted 4 months ago, paid for 2 months)
             {
-                'roll_number': 1006,
                 'name': 'Frank White',
-                'phone_number': 9876543215,
+                'phone_number': 9776543215,
                 'student_class': 4,
                 'address': '303 Old St',
-                'paid_till_date': date.today() - timedelta(days=15)
+                'admission_offset_months': 4,
+                'initial_months_paid': 2
             },
-            # Another due soon student
+            # Another due soon student (admitted 2 months ago, paid for 2 months)
             {
-                'roll_number': 1007,
                 'name': 'Grace Green',
-                'phone_number': 9876543216,
+                'phone_number': 9676543216,
                 'student_class': 10,
                 'address': '404 New Blvd',
-                'paid_till_date': date.today() + timedelta(days=2)
+                'admission_offset_months': 2,
+                'initial_months_paid': 2
             },
         ]
 
-        for data in students_data:
-            Student.objects.create(**data)
-            self.stdout.write(self.style.SUCCESS(f'Successfully added student: {data['name']}'))
+        for config in students_initial_config:
+            admission_date = today - relativedelta(months=config['admission_offset_months'])
+            paid_till_date = admission_date + relativedelta(months=config['initial_months_paid'])
+
+            student = Student.objects.create(
+                name=config['name'],
+                phone_number=config['phone_number'],
+                student_class=config['student_class'],
+                address=config['address'],
+                paid_till_date=paid_till_date
+            )
+
+            Payment.objects.create(
+                student=student,
+                payment_date=admission_date,
+                amount_paid=MONTHLY_FEE * config['initial_months_paid'],
+                paid_for_months=config['initial_months_paid']
+            )
+            self.stdout.write(self.style.SUCCESS(f'Successfully added student: {student.name} and initial payment.'))
 
         self.stdout.write(self.style.SUCCESS('Student data population complete.'))

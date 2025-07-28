@@ -1,139 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --dark-bg: #1a1a2e;
-            --card-bg: #16213e;
-            --accent-blue: #0f3460;
-            --accent-orange: #e94560;
-            --text-light: #e0e0e0;
-            --text-dark: #ffffff;
-            --button-bg: #007bff;
-            --button-hover: #0056b3;
-        }
+{% extends 'students/base.html' %}
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding-bottom: 80px; /* Space for fixed bottom nav */
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .container {
-            flex-grow: 1;
-            padding: 20px;
-            width: calc(100% - 40px); /* Adjusted for full width on mobile */
-            margin: 20px auto;
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* This will center children horizontally */
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2em;
-            margin-bottom: 30px;
-            color: var(--accent-orange);
-            font-weight: 700;
-        }
-
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Two columns */
-            gap: 15px; /* Space between cards */
-            margin-bottom: 20px;
-            width: 100%; /* Ensure grid takes full width of container */
-        }
-
-        .analytics-card {
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            color: white; /* Text color for better contrast on colored backgrounds */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .analytics-card.total-students { background-color: #4CAF50; /* Green */ }
-        .analytics-card.pending-fees { background-color: #FFC107; /* Amber */ }
-        .analytics-card.due-soon-fees { background-color: #00BCD4; /* Cyan */ }
-        .analytics-card.paid-up-fees { background-color: #9C27B0; /* Purple */ }
-
-        .analytics-card h2 { font-size: 1.1em; margin-top: 0; margin-bottom: 5px; color: white; /* Ensure heading is white */ }
-        .analytics-card p { font-size: 1.8em; font-weight: bold; color: white; /* Ensure number is white */ margin: 5px 0; }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%; /* Ensure chart container takes full width of container */
-            margin-top: 20px;
-            background-color: var(--accent-blue);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--card-bg);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-        }
-
-        .bottom-nav a {
-            color: var(--text-light);
-            text-decoration: none;
-            padding: 10px 5px;
-            text-align: center;
-            flex-grow: 1;
-            font-size: 0.8em;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: color 0.3s ease, background-color 0.3s ease;
-            border-radius: 10px;
-            margin: 0 5px;
-        }
-
-        .bottom-nav a:hover,
-        .bottom-nav a.active {
-            color: var(--accent-orange);
-            background-color: var(--accent-blue);
-        }
-
-        .bottom-nav a i {
-            margin-bottom: 5px;
-            font-size: 1.6em;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
+{% block content %}
+    <div class="card">
         <h1>Dashboard</h1>
 
         <div class="analytics-grid">
@@ -162,15 +30,10 @@
             <canvas id="feesDonutChart"></canvas>
         </div>
     </div>
+{% endblock content %}
 
-    <div class="bottom-nav">
-        <a href="{% url 'search_student' %}"><i class="fas fa-search"></i> Search</a>
-        <a href="{% url 'add_student' %}"><i class="fas fa-user-plus"></i> Admission</a>
-        <a href="{% url 'pending_fees_list' %}"><i class="fas fa-clock"></i> Pending</a>
-        <a href="{% url 'due_soon_fees_list' %}"><i class="fas fa-bell"></i> Due Soon</a>
-        <a href="{% url 'dashboard' %}" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a>
-    </div>
-
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Set global default font color for Chart.js
         Chart.defaults.color = '#FFFFFF'; 
@@ -217,5 +80,4 @@
             }
         });
     </script>
-</body>
-</html>
+{% endblock scripts %}
