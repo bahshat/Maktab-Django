@@ -43,6 +43,7 @@
 
         h1, h2, h3, h4, h5, h6 {
             color: var(--accent-pink);
+            text-align: center;
         }
 
         .form-group {
@@ -58,8 +59,7 @@
         input[type="text"],
         input[type="number"],
         input[type="date"],
-        input[type="password"],
-        select {
+        input[type="password"] {
             width: calc(100% - 20px);
             padding: 10px;
             border-radius: 5px;
@@ -67,6 +67,18 @@
             background-color: var(--background-dark);
             color: var(--text-light);
             font-size: 16px;
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+        }
+
+        select {
+            width: calc(100% - 20px); /* Match input width */
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            font-size: 16px;
+            box-sizing: border-box;
         }
 
         button,
@@ -81,6 +93,8 @@
             text-decoration: none;
             display: inline-block;
             text-align: center;
+            width: calc(100% - 20px); /* Match input width */
+            box-sizing: border-box;
         }
 
         button:hover,

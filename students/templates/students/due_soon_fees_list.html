@@ -6,12 +6,22 @@
         {% if due_soon_students %}
             <div class="student-list">
                 {% for student in due_soon_students %}
-                    <div class="student-card">
-                        <div class="student-info">
-                            <a href="{% url 'student_detail' student.roll_number %}">
-                                <h3>{{ student.name }} (Roll No: {{ student.roll_number }})</h3>
+                    <div class="student-card" style="
+                        background-color: var(--accent-blue);
+                        margin-bottom: 15px; /* Added for separation */
+                        padding: 15px;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                        display: flex;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        transition: transform 0.2s ease;
+                    ">
+                        <div class="student-info" style="flex-grow: 1; text-align: left;">
+                            <a href="{% url 'student_detail' student.roll_number %}" style="color: var(--text-light); text-decoration: none;">
+                                <h3 style="margin: 0; font-size: 1.2em; color: var(--text-light);">Roll: {{ student.roll_number }} - {{ student.name }}</h3>
                             </a>
-                            <p><strong>Due by:</strong> {{ student.paid_till_date|date:"M d, Y" }}</p>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light);"><strong>Due by:</strong> {{ student.paid_till_date|date:"M d, Y" }}</p>
                         </div>
                         <div class="whatsapp-section">
                             {% if student.phone_number1 or student.phone_number2 %}
@@ -20,11 +30,24 @@
                                     '{{ student.phone_number2 }}',
                                     '{{ student.name }}',
                                     '{{ student.paid_till_date|date:"M d, Y" }}'
-                                )">
-                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                )" style="
+                                    background-color: #25D366;
+                                    color: white;
+                                    padding: 10px 15px;
+                                    border: none;
+                                    border-radius: 25px;
+                                    cursor: pointer;
+                                    font-size: 0.9em;
+                                    display: flex;
+                                    align-items: center;
+                                    margin-left: auto;
+                                    text-decoration: none;
+                                    transition: background-color 0.3s ease, transform 0.2s ease;
+                                ">
+                                    <i class="fab fa-whatsapp" style="margin-right: 8px; font-size: 1.1em; color: white;"></i> WhatsApp
                                 </button>
                             {% else %}
-                                <span class="no-phone">No phone number</span>
+                                <span class="no-phone" style="color: var(--text-muted); font-size: 0.9em;">No phone number</span>
                             {% endif %}
                         </div>
                     </div>
