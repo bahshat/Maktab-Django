@@ -99,21 +99,15 @@ def student_detail(request, roll_number):
             payment.payment_date = timezone.now().date()
             payment.save()
 
-            months_per_period = {
-                'monthly': 1,
-                'quarterly': 3,
-                'half_yearly': 6,
-                'yearly': 12,
-            }[student.fees_period]
-
-            months_to_add = payment.paid_for_months * months_per_period
-
             # Update student's paid_till_date
+            print(f"[DEBUG] Before update: student.paid_till_date = {student.paid_till_date}")
+            print(f"[DEBUG] Payment paid_for_months = {payment.paid_for_months}")
             if student.paid_till_date:
-                student.paid_till_date += relativedelta(months=months_to_add)
+                student.paid_till_date += relativedelta(months=payment.paid_for_months)
             else:
-                student.paid_till_date = timezone.now().date() + relativedelta(months=months_to_add)
+                student.paid_till_date = timezone.now().date() + relativedelta(months=payment.paid_for_months)
             student.save()
+            print(f"[DEBUG] After update: student.paid_till_date = {student.paid_till_date}")
             return redirect('student_detail', roll_number=student.roll_number)
     else:
         payment_form = PaymentForm()

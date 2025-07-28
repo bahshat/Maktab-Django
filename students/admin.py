@@ -19,19 +19,10 @@ class PaymentAdmin(admin.ModelAdmin):
 
         # Update the associated student's paid_till_date
         student = obj.student
-        months_per_period = {
-            'monthly': 1,
-            'quarterly': 3,
-            'half_yearly': 6,
-            'yearly': 12,
-        }[student.fees_period]
-
-        months_to_add = obj.paid_for_months * months_per_period
-
         if student.paid_till_date:
-            student.paid_till_date += relativedelta(months=months_to_add)
+            student.paid_till_date += relativedelta(months=obj.paid_for_months)
         else:
-            student.paid_till_date = timezone.now().date() + relativedelta(months=months_to_add)
+            student.paid_till_date = timezone.now().date() + relativedelta(months=obj.paid_for_months)
         student.save()
 
 admin.site.register(Student, StudentAdmin)
