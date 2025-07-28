@@ -232,6 +232,7 @@
         {% endblock %}
     </div>
 
+    {% block footer_nav %}
     <div class="bottom-nav">
         <a href="{% url 'search_student' %}" class="nav-item">
             <i class="fas fa-search"></i>
@@ -258,6 +259,7 @@
             <span>Logout</span>
         </a>
     </div>
+{% endblock footer_nav %}
 
     {% block scripts %}
     {% endblock %}

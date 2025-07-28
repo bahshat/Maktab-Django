@@ -108,14 +108,19 @@ def student_detail(request, roll_number):
                 student.paid_till_date = timezone.now().date() + relativedelta(months=payment.paid_for_months)
             student.save()
             print(f"[DEBUG] After update: student.paid_till_date = {student.paid_till_date}")
-            return redirect('student_detail', roll_number=student.roll_number)
+            return redirect(reverse('student_detail', kwargs={'roll_number': student.roll_number}) + f'?payment_success=True&payment_amount={payment.amount_paid}')
     else:
         payment_form = PaymentForm()
+
+    payment_success = request.GET.get('payment_success', False)
+    payment_amount = request.GET.get('payment_amount', 0)
 
     return render(request, 'students/student_detail.html', {
         'student': student,
         'payments': payments,
-        'payment_form': payment_form
+        'payment_form': payment_form,
+        'payment_success': payment_success,
+        'payment_amount': payment_amount
     })
 
 @login_required
@@ -149,9 +154,27 @@ def fees_info(request, roll_number):
 
     # Check for pending fees
     pending_periods, pending_amount = calculate_pending_periods(student, today)
+    from_date = None
+    to_date = None
+
+    # Check for pending fees
+    pending_periods, pending_amount = calculate_pending_periods(student, today)
     if pending_amount > 0:
         fee_status = f"Pending: {pending_periods} periods"
         fee_amount = pending_amount
+
+        if student.paid_till_date is None:
+            from_date = date(today.year, 1, 1)
+        else:
+            from_date = student.paid_till_date + relativedelta(days=1)
+
+        months_per_period = {
+            'monthly': 1,
+            'quarterly': 3,
+            'half_yearly': 6,
+            'yearly': 12,
+        }[student.fees_period]
+        to_date = from_date + relativedelta(months=pending_periods * months_per_period) - relativedelta(days=1)
     else:
         # Check for due soon fees
         seven_days_from_now = today + timedelta(days=7)
@@ -173,6 +196,8 @@ def fees_info(request, roll_number):
         'fee_status': fee_status,
         'fee_amount': fee_amount,
         'payments': payments,
+        'from_date': from_date,
+        'to_date': to_date,
     })
 
 @login_required

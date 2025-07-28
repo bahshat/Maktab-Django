@@ -56,45 +56,4 @@
     
 {% endblock content %}
 
-{% block scripts %}
-<script>
-    function showPhoneNumberSelection() {
-        const phoneNumber1 = "{{ student.phone_number1 }}";
-        const phoneNumber2 = "{{ student.phone_number2 }}";
-        let message = "";
-
-        if (phoneNumber1 && phoneNumber2) {
-            message = `Choose a phone number:\n1. ${phoneNumber1}\n2. ${phoneNumber2}`;
-        } else if (phoneNumber1) {
-            message = `Send to: ${phoneNumber1}`;
-        } else if (phoneNumber2) {
-            message = `Send to: ${phoneNumber2}`;
-        } else {
-            alert("No phone numbers available for this student.");
-            return;
-        }
-
-        let selectedNumber = null;
-        if (phoneNumber1 && phoneNumber2) {
-            const choice = prompt(message);
-            if (choice === '1') {
-                selectedNumber = phoneNumber1;
-            } else if (choice === '2') {
-                selectedNumber = phoneNumber2;
-            } else {
-                alert("Invalid choice or cancelled.");
-                return;
-            }
-        } else if (phoneNumber1) {
-            selectedNumber = phoneNumber1;
-        } else if (phoneNumber2) {
-            selectedNumber = phoneNumber2;
-        }
-
-        if (selectedNumber) {
-            const whatsappMessage = `Dear {{ student.name }}, this is a reminder about your fees.`;
-            window.open(`https://wa.me/${selectedNumber}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
-        }
-    }
-</script>
-{% endblock scripts %}
+{% block scripts %}<script>    function sendWhatsAppMessage(phoneNumber, message) {        if (phoneNumber) {            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');        } else {            alert("No phone number available for this student.");        }    }    function promptWhatsApp(studentName, phoneNumber1, phoneNumber2, message) {        let selectedNumber = null;        if (phoneNumber1 && phoneNumber2) {            const choice = prompt(`Choose a phone number for ${studentName}:\n1. ${phoneNumber1}\n2. ${phoneNumber2}`);            if (choice === '1') {                selectedNumber = phoneNumber1;            } else if (choice === '2') {                selectedNumber = phoneNumber2;            } else {                alert("Invalid choice or cancelled.");                return;            }        } else if (phoneNumber1) {            selectedNumber = phoneNumber1;        } else if (phoneNumber2) {            selectedNumber = phoneNumber2;        }        if (selectedNumber) {            sendWhatsAppMessage(selectedNumber, message);        }    }    {% if payment_success %}        const studentName = "{{ student.name }}";        const phoneNumber1 = "{{ student.phone_number1 }}";        const phoneNumber2 = "{{ student.phone_number2 }}";        const paymentAmount = "{{ payment_amount }}";        const feesInfoLink = `{{ request.scheme }}://{{ request.get_host }}{% url 'fees_info' student.roll_number %}`;        const confirmSend = confirm(`Payment of ₹${paymentAmount} recorded for ${studentName}. Do you want to send a WhatsApp message?`);        if (confirmSend) {            const paymentMessage = `Dear ${studentName}, your payment of ₹${paymentAmount} has been successfully recorded. Your updated fee details can be viewed here: ${feesInfoLink}. Thank you.`;            promptWhatsApp(studentName, phoneNumber1, phoneNumber2, paymentMessage);        }    {% endif %}    // Original function for general reminders (if still needed elsewhere, otherwise remove)    function showPhoneNumberSelection() {        const phoneNumber1 = "{{ student.phone_number1 }}";        const phoneNumber2 = "{{ student.phone_number2 }}";        let message = `Dear {{ student.name }}, this is a reminder about your fees.`;        promptWhatsApp("{{ student.name }}", phoneNumber1, phoneNumber2, message);    }</script>{% endblock scripts %}
