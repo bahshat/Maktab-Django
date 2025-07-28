@@ -5,7 +5,8 @@
         <h1>Student Detail</h1>
         <p><strong><i class="fas fa-user"></i> Name:</strong> {{ student.name }}</p>
         <p><strong><i class="fas fa-id-card"></i> Roll Number:</strong> {{ student.roll_number }}</p>
-        <p><strong><i class="fas fa-phone"></i> Phone Number:</strong> {{ student.phone_number }}</p>
+        <p><strong><i class="fas fa-phone"></i> Phone Number 1:</strong> {{ student.phone_number1 }}</p>
+        <p><strong><i class="fas fa-phone"></i> Phone Number 2:</strong> {{ student.phone_number2 }}</p>
         <p><strong><i class="fas fa-graduation-cap"></i> Class:</strong> {{ student.student_class }}</p>
         <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> {{ student.address }}</p>
         <p><strong><i class="fas fa-calendar-alt"></i> Paid Till Date:</strong> 
@@ -51,4 +52,54 @@
             <button type="submit"><i class="fas fa-money-bill-wave"></i> Record Payment</button>
         </form>
     </div>
+
+    <div class="card">
+        <h2>Send WhatsApp Message</h2>
+        <button onclick="showPhoneNumberSelection()">
+            <i class="fab fa-whatsapp"></i> Send WhatsApp
+        </button>
+    </div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+    function showPhoneNumberSelection() {
+        const phoneNumber1 = "{{ student.phone_number1 }}";
+        const phoneNumber2 = "{{ student.phone_number2 }}";
+        let message = "";
+
+        if (phoneNumber1 && phoneNumber2) {
+            message = `Choose a phone number:\n1. ${phoneNumber1}\n2. ${phoneNumber2}`;
+        } else if (phoneNumber1) {
+            message = `Send to: ${phoneNumber1}`;
+        } else if (phoneNumber2) {
+            message = `Send to: ${phoneNumber2}`;
+        } else {
+            alert("No phone numbers available for this student.");
+            return;
+        }
+
+        let selectedNumber = null;
+        if (phoneNumber1 && phoneNumber2) {
+            const choice = prompt(message);
+            if (choice === '1') {
+                selectedNumber = phoneNumber1;
+            } else if (choice === '2') {
+                selectedNumber = phoneNumber2;
+            } else {
+                alert("Invalid choice or cancelled.");
+                return;
+            }
+        } else if (phoneNumber1) {
+            selectedNumber = phoneNumber1;
+        } else if (phoneNumber2) {
+            selectedNumber = phoneNumber2;
+        }
+
+        if (selectedNumber) {
+            const whatsappMessage = `Dear {{ student.name }}, this is a reminder about your fees.`;
+            window.open(`https://wa.me/${selectedNumber}?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
+        }
+    }
+</script>
+{% endblock scripts %}

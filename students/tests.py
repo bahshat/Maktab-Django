@@ -9,7 +9,8 @@ class StudentModelTest(TestCase):
     def test_create_student(self):
         student = Student.objects.create(
             name='Test Student',
-            phone_number=1234567890,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=10,
             address='123 Test St',
             paid_till_date=timezone.now().date()
@@ -21,7 +22,8 @@ class PaymentModelTest(TestCase):
     def setUp(self):
         self.student = Student.objects.create(
             name='Test Student',
-            phone_number=1234567890,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=10,
             address='123 Test St',
             paid_till_date=timezone.now().date()
@@ -43,7 +45,8 @@ class FeesCalculationTest(TestCase):
         today = timezone.now().date()
         student = Student.objects.create(
             name='Test Student',
-            phone_number=123,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=1,
             address='abc',
             paid_till_date=today + relativedelta(months=1)
@@ -56,7 +59,8 @@ class FeesCalculationTest(TestCase):
         today = timezone.now().date()
         student = Student.objects.create(
             name='Test Student',
-            phone_number=123,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=1,
             address='abc',
             paid_till_date=today - relativedelta(months=1)
@@ -69,7 +73,8 @@ class FeesCalculationTest(TestCase):
         today = timezone.now().date()
         student = Student.objects.create(
             name='Test Student',
-            phone_number=123,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=1,
             address='abc',
             paid_till_date=today - relativedelta(months=3)
@@ -83,7 +88,8 @@ class FeesCalculationTest(TestCase):
         # Paid till 15th of last month, so current month is also pending
         student = Student.objects.create(
             name='Test Student',
-            phone_number=123,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=1,
             address='abc',
             paid_till_date=today - relativedelta(months=1, days=today.day - 15)
@@ -96,7 +102,8 @@ class FeesCalculationTest(TestCase):
         today = timezone.now().date()
         student = Student.objects.create(
             name='Test Student',
-            phone_number=123,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=1,
             address='abc',
             paid_till_date=today
@@ -109,7 +116,8 @@ class FeesCalculationTest(TestCase):
         today = timezone.now().date()
         student = Student.objects.create(
             name='Test Student',
-            phone_number=123,
+            phone_number1='1234567890',
+            phone_number2='0987654321',
             student_class=1,
             address='abc',
             paid_till_date=today + relativedelta(days=5)

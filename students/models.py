@@ -3,7 +3,8 @@ from django.db import models
 class Student(models.Model):
     roll_number = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    phone_number = models.BigIntegerField()
+    phone_number1 = models.CharField(max_length=15, blank=True, null=True)
+    phone_number2 = models.CharField(max_length=15, blank=True, null=True)
     student_class = models.SmallIntegerField()
     address = models.CharField(max_length=255, blank=True)
     paid_till_date = models.DateField(null=False, blank=False)

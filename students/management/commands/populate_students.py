@@ -22,7 +22,8 @@ class Command(BaseCommand):
             # Student admitted 6 months ago, paid for 4 months (2 months pending)
             {
                 'name': 'Bob Johnson',
-                'phone_number': 9876543211,
+                'phone_number1': '9876543211',
+                'phone_number2': '9988776655',
                 'student_class': 7,
                 'address': '456 Oak Ave',
                 'admission_offset_months': 6, # Admitted 6 months ago
@@ -31,7 +32,8 @@ class Command(BaseCommand):
             # Student admitted 3 months ago, paid for 3 months (due today)
             {
                 'name': 'Charlie Brown',
-                'phone_number': 9876543212,
+                'phone_number1': '9876543212',
+                'phone_number2': '',
                 'student_class': 6,
                 'address': '789 Pine Ln',
                 'admission_offset_months': 3,
@@ -40,7 +42,8 @@ class Command(BaseCommand):
             # Student admitted 1 month ago, paid for 2 months (paid till next month)
             {
                 'name': 'Diana Prince',
-                'phone_number': 9876543213,
+                'phone_number1': '9876543213',
+                'phone_number2': '9123456789',
                 'student_class': 8,
                 'address': '101 Hero Way',
                 'admission_offset_months': 1,
@@ -49,7 +52,8 @@ class Command(BaseCommand):
             # Student admitted today, paid for 1 month
             {
                 'name': 'Eve Adams',
-                'phone_number': 9876543214,
+                'phone_number1': '9876543214',
+                'phone_number2': '',
                 'student_class': 9,
                 'address': '202 Future Rd',
                 'admission_offset_months': 0,
@@ -58,7 +62,8 @@ class Command(BaseCommand):
             # Another pending student (admitted 4 months ago, paid for 2 months)
             {
                 'name': 'Frank White',
-                'phone_number': 9776543215,
+                'phone_number1': '9776543215',
+                'phone_number2': '9000000000',
                 'student_class': 4,
                 'address': '303 Old St',
                 'admission_offset_months': 4,
@@ -67,7 +72,8 @@ class Command(BaseCommand):
             # Another due soon student (admitted 2 months ago, paid for 2 months)
             {
                 'name': 'Grace Green',
-                'phone_number': 9676543216,
+                'phone_number1': '9676543216',
+                'phone_number2': '',
                 'student_class': 10,
                 'address': '404 New Blvd',
                 'admission_offset_months': 2,
@@ -81,7 +87,8 @@ class Command(BaseCommand):
 
             student = Student.objects.create(
                 name=config['name'],
-                phone_number=config['phone_number'],
+                phone_number1=config['phone_number1'],
+                phone_number2=config['phone_number2'],
                 student_class=config['student_class'],
                 address=config['address'],
                 paid_till_date=paid_till_date
