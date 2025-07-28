@@ -1,12 +1,12 @@
 {% extends 'students/base.html' %}
 
 {% block content %}
-    <div class="card">
-        <h1>Due Soon Fees</h1>
-        {% if due_soon_students %}
-            <div class="student-list">
-                {% for student in due_soon_students %}
-                    <div class="student-card" style="
+<div class="card">
+    <h1>Due Soon Fees</h1>
+    {% if due_soon_students %}
+    <div class="student-list">
+        {% for student in due_soon_students %}
+        <div class="student-card" style="
                         background-color: var(--accent-blue);
                         margin-bottom: 15px; /* Added for separation */
                         padding: 15px;
@@ -17,21 +17,26 @@
                         flex-wrap: wrap;
                         transition: transform 0.2s ease;
                     ">
-                        <div class="student-info" style="flex-grow: 1; text-align: left;">
-                            <a href="{% url 'student_detail' student.roll_number %}" style="color: var(--text-light); text-decoration: none;">
-                                <h3 style="margin: 0; font-size: 1.2em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;">Roll: {{ student.roll_number }} - {{ student.name }}</h3>
-                            </a>
-                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;"><strong>Due by:</strong> {{ student.paid_till_date|date:"M d, Y" }}</p>
-                        </div>
-                        <div class="whatsapp-section">
-                            {% if student.phone_number1 or student.phone_number2 %}
-                                <button class="whatsapp-button" onclick="showPhoneNumberSelection(
+            <div class="student-info" style="flex-grow: 1; text-align: left;">
+                <a href="{% url 'student_detail' student.roll_number %}"
+                    style="color: var(--text-light); text-decoration: none;">
+                    <h3
+                        style="margin: 0; font-size: 1.2em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;">
+                        Roll: {{ student.roll_number }} - {{ student.name }}</h3>
+                </a>
+                <p
+                    style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;">
+                    <strong>Due by:</strong> {{ student.paid_till_date|date:"M d, Y" }}
+                </p>
+            </div>
+            <div class="whatsapp-section">
+                {% if student.phone_number1 or student.phone_number2 %}
+                <button class="whatsapp-button" onclick="showPhoneNumberSelection(
                                     '{{ student.phone_number1 }}',
                                     '{{ student.phone_number2 }}',
                                     '{{ student.name }}',
-                                    '{{ student.paid_till_date|date:"M d, Y" }}',
-                                    '{{ student.roll_number }}'
-                                )" style="
+                                    '{{ student.paid_till_date|date:" M d, Y" }}', '{{ student.roll_number }}' )"
+                    style="
                                     background-color: #25D366;
                                     color: white;
                                     padding: 10px 20px; /* Increased padding */
@@ -47,19 +52,19 @@
                                     transition: background-color 0.3s ease, transform 0.2s ease;
                                     white-space: nowrap; /* Prevent text wrapping */
                                 ">
-                                    <i class="fab fa-whatsapp" style="margin-right: 8px; font-size: 1.1em; color: white;"></i> WhatsApp
-                                </button>
-                            {% else %}
-                                <span class="no-phone" style="color: var(--text-muted); font-size: 0.9em;">No phone number</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+                    <i class="fab fa-whatsapp" style="margin-right: 8px; font-size: 1.1em; color: white;"></i> WhatsApp
+                </button>
+                {% else %}
+                <span class="no-phone" style="color: var(--text-muted); font-size: 0.9em;">No phone number</span>
+                {% endif %}
             </div>
-        {% else %}
-            <p>No students with fees due soon.</p>
-        {% endif %}
+        </div>
+        {% endfor %}
     </div>
+    {% else %}
+    <p>No students with fees due soon.</p>
+    {% endif %}
+</div>
 {% endblock content %}
 
 {% block scripts %}
@@ -67,34 +72,39 @@
     function showPhoneNumberSelection(phone1, phone2, studentName, dueDate, rollNumber) {
         const feesInfoLink = `https://{{ request.get_host }}{% url 'fees_info' 0 %}`.replace('/0/', `/${rollNumber}/`);
         let message = `Mohtaram ${studentName}, aapki fees bharne ki tareeq nazdeeq hai jiski date hai ${dueDate}. \nBara-e-karam fees jald jama karvaye.
+                       Is link ko tap kar ke aap fees ki sari maloomat dekh sakte hain:
+                       ${feesInfoLink}
+                        Shukriya.`
 
-View your fee details here:
- ${feesInfoLink}
-
-Thank you.`
         let selectedNumber = null;
+        // Check if both phone numbers are available
 
-        if (phone1 && phone2) {
+
+        if (phone1 && phone2 !== "None") { // Change this line
+            // Prompt user to choose a phone number
             const choice = prompt(`Choose a phone number for ${studentName}:\n1. ${phone1}\n2. ${phone2}`);
-            if (choice === '1') {
-                selectedNumber = phone1;
-            } else if (choice === '2') {
-                selectedNumber = phone2;
+
+            // Validate user input
+            if (['1', '2'].includes(choice)) {
+                selectedNumber = choice === '1' ? phone1 : phone2;
             } else {
                 alert("Invalid choice or cancelled.");
                 return;
             }
-        } else if (phone1) {
-            selectedNumber = phone1;
-        } else if (phone2) {
-            selectedNumber = phone2;
         } else {
-            alert("No phone numbers available for this student.");
-            return;
-        }
+            // If only one phone number is available, use it
+            selectedNumber = phone1 || phone2;
 
+            // If no phone numbers are available, alert the user
+            if (!selectedNumber || selectedNumber === "None") { // Add check for "None" here too
+                alert("No phone numbers available for this student.");
+                return;
+            }
+        }
+        // Open WhatsApp link with selected phone number
         if (selectedNumber) {
-            window.open(`https://wa.me/+91${selectedNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            const whatsappLink = `https://wa.me/+91${selectedNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappLink, '_blank');
         }
     }
 </script>

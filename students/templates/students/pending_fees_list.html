@@ -88,28 +88,34 @@ ${feesInfoLink}
 
 Thank you.`
         let selectedNumber = null;
+        // Check if both phone numbers are available
 
-        if (phone1 && phone2) {
+
+        if (phone1 && phone2 !== "None") { // Change this line
+            // Prompt user to choose a phone number
             const choice = prompt(`Choose a phone number for ${studentName}:\n1. ${phone1}\n2. ${phone2}`);
-            if (choice === '1') {
-                selectedNumber = cleanPhoneNumber(phone1);
-            } else if (choice === '2') {
-                selectedNumber = cleanPhoneNumber(phone2);
+
+            // Validate user input
+            if (['1', '2'].includes(choice)) {
+                selectedNumber = choice === '1' ? phone1 : phone2;
             } else {
                 alert("Invalid choice or cancelled.");
                 return;
             }
-        } else if (phone1) {
-            selectedNumber = cleanPhoneNumber(phone1);
-        } else if (phone2) {
-            selectedNumber = cleanPhoneNumber(phone2);
         } else {
-            alert("No phone numbers available for this student.");
-            return;
-        }
+            // If only one phone number is available, use it
+            selectedNumber = phone1 || phone2;
 
+            // If no phone numbers are available, alert the user
+            if (!selectedNumber || selectedNumber === "None") { // Add check for "None" here too
+                alert("No phone numbers available for this student.");
+                return;
+            }
+        }
+        // Open WhatsApp link with selected phone number
         if (selectedNumber) {
-            window.open(`https://wa.me/+91${selectedNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            const whatsappLink = `https://wa.me/+91${selectedNumber}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappLink, '_blank');
         }
     }
 </script>
