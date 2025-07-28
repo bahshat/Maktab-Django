@@ -30,25 +30,6 @@ def calculate_pending_periods(student, current_date):
     paid_till_date = student.paid_till_date
     fees_period_type = student.fees_period
 
-    if paid_till_date and paid_till_date >= current_date:
-        return 0, 0
-
-    if paid_till_date is None:
-        first_pending_month_start = date(current_date.year, 1, 1)
-    else:
-        # Calculate the first day of the month *after* paid_till_date
-        next_month_date = paid_till_date + relativedelta(months=1)
-        first_pending_month_start = date(next_month_date.year, next_month_date.month, 1)
-
-    # If the first pending month is in the future, no fees are pending yet.
-    if first_pending_month_start > current_date:
-        return 0, 0
-
-    # Calculate the number of full months between first_pending_month_start and current_date
-    # This will count the number of months that are fully or partially pending.
-    delta_months = relativedelta(current_date, first_pending_month_start)
-    total_pending_months = delta_months.years * 12 + delta_months.months + 1 # +1 to include the current month
-
     months_per_period = {
         'monthly': 1,
         'quarterly': 3,
@@ -56,10 +37,32 @@ def calculate_pending_periods(student, current_date):
         'yearly': 12,
     }[fees_period_type]
 
-    pending_periods = (total_pending_months + months_per_period - 1) // months_per_period
-    pending_amount = pending_periods * MONTHLY_FEE * months_per_period
+    pending_periods = 0
+    pending_amount = 0
+    total_pending_months_display = 0
 
-    return max(0, pending_periods), pending_amount
+    # If paid_till_date is today or in the future, no fees are pending.
+    if paid_till_date and paid_till_date >= current_date:
+        return 0, 0, 0
+
+    # Determine the effective start date for calculating pending fees.
+    # If paid_till_date is None, fees are pending from the beginning of the current year.
+    # Otherwise, fees are pending from the day after paid_till_date.
+    if paid_till_date is None:
+        effective_start_date = date(current_date.year, 1, 1)
+    else:
+        effective_start_date = paid_till_date + timedelta(days=1)
+
+    # Iterate through periods to count pending ones
+    current_period_start = effective_start_date
+    while current_period_start <= current_date:
+        pending_periods += 1
+        current_period_start += relativedelta(months=months_per_period)
+
+    pending_amount = pending_periods * MONTHLY_FEE * months_per_period
+    total_pending_months_display = pending_periods * months_per_period
+
+    return max(0, pending_periods), pending_amount, total_pending_months_display
 
 @login_required
 def search_student(request):
@@ -130,11 +133,12 @@ def pending_fees_list(request):
 
     students_with_pending_amount = []
     for student in all_pending_students:
-        pending_periods, pending_amount = calculate_pending_periods(student, today)
+        pending_periods, pending_amount, total_pending_months = calculate_pending_periods(student, today)
         students_with_pending_amount.append({
             'student': student,
             'pending_amount': pending_amount,
             'pending_periods': pending_periods,
+            'total_pending_months': total_pending_months,
         })
     return render(request, 'students/pending_fees_list.html', {'pending_students': students_with_pending_amount})
 
@@ -153,19 +157,8 @@ def fees_info(request, roll_number):
     fee_amount = 0
 
     # Check for pending fees
-    pending_periods, pending_amount = calculate_pending_periods(student, today)
+    pending_periods, pending_amount, total_pending_months_display = calculate_pending_periods(student, today)
     
-    # Calculate total_pending_months_display based on pending_periods and fees_period
-    total_pending_months_display = 0
-    if pending_periods > 0:
-        months_per_period = {
-            'monthly': 1,
-            'quarterly': 3,
-            'half_yearly': 6,
-            'yearly': 12,
-        }[student.fees_period]
-        total_pending_months_display = pending_periods * months_per_period
-
     from_date = None
     to_date = None
 
