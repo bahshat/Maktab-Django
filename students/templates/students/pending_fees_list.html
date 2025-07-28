@@ -32,7 +32,8 @@
                                     '{{ item.student.phone_number2 }}',
                                     '{{ item.student.name }}',
                                     '{{ item.pending_periods }}',
-                                    '{{ item.pending_amount }}'
+                                    '{{ item.pending_amount }}',
+                                    '{{ item.student.roll_number }}'
                                 )" style="
                                     background-color: #25D366;
                                     color: white;
@@ -66,8 +67,9 @@
 
 {% block scripts %}
 <script>
-    function showPhoneNumberSelection(phone1, phone2, studentName, pendingPeriods, pendingAmount) {
-        let message = `Dear ${studentName}, your fees are pending for ${pendingPeriods} periods, totaling ₹${pendingAmount}. Please pay as soon as possible. Thank you.`;
+    function showPhoneNumberSelection(phone1, phone2, studentName, pendingPeriods, pendingAmount, rollNumber) {
+        const feesInfoLink = `{{ request.scheme }}://{{ request.get_host }}{% url 'fees_info' 0 %}`.replace('/0/', `/${rollNumber}/`);
+        let message = `Dear ${studentName}, your fees are pending for ${pendingPeriods} periods, totaling ₹${pendingAmount}. Please pay as soon as possible. You can view your fee details here: ${feesInfoLink} Thank you.`;
         let selectedNumber = null;
 
         if (phone1 && phone2) {

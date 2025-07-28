@@ -140,6 +140,41 @@ def due_soon_fees_list(request):
     due_soon_students = Student.objects.filter(paid_till_date__gte=today, paid_till_date__lte=seven_days_from_now).order_by('paid_till_date')
     return render(request, 'students/due_soon_fees_list.html', {'due_soon_students': due_soon_students})
 
+def fees_info(request, roll_number):
+    student = get_object_or_404(Student, roll_number=roll_number)
+    today = timezone.now().date()
+    
+    fee_status = "Paid Up"
+    fee_amount = 0
+
+    # Check for pending fees
+    pending_periods, pending_amount = calculate_pending_periods(student, today)
+    if pending_amount > 0:
+        fee_status = f"Pending: {pending_periods} periods"
+        fee_amount = pending_amount
+    else:
+        # Check for due soon fees
+        seven_days_from_now = today + timedelta(days=7)
+        if student.paid_till_date and today <= student.paid_till_date <= seven_days_from_now:
+            fee_status = "Due Soon"
+            # Calculate amount for the next period
+            months_per_period = {
+                'monthly': 1,
+                'quarterly': 3,
+                'half_yearly': 6,
+                'yearly': 12,
+            }[student.fees_period]
+            fee_amount = MONTHLY_FEE * months_per_period
+
+    payments = student.payments.all().order_by('-payment_date')
+
+    return render(request, 'students/fees_info.html', {
+        'student': student,
+        'fee_status': fee_status,
+        'fee_amount': fee_amount,
+        'payments': payments,
+    })
+
 @login_required
 def dashboard(request):
     total_students = Student.objects.count()
