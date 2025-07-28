@@ -28,29 +28,36 @@ def user_logout(request):
 
 def calculate_pending_periods(student, current_date):
     paid_till_date = student.paid_till_date
+    fees_period_type = student.fees_period
 
-    if paid_till_date >= current_date:
+    if paid_till_date and paid_till_date >= current_date:
         return 0, 0
 
-    # Calculate the number of full months between paid_till_date and current_date
-    # If paid_till_date is None, assume pending from the start of the current year
     if paid_till_date is None:
-        pending_from_date = date(current_date.year, 1, 1)
+        first_pending_month_start = date(current_date.year, 1, 1)
     else:
-        pending_from_date = paid_till_date
+        # Calculate the first day of the month *after* paid_till_date
+        next_month_date = paid_till_date + relativedelta(months=1)
+        first_pending_month_start = date(next_month_date.year, next_month_date.month, 1)
 
-    # Calculate months passed
-    delta = relativedelta(current_date, pending_from_date)
-    pending_periods = delta.years * 12 + delta.months
+    # If the first pending month is in the future, no fees are pending yet.
+    if first_pending_month_start > current_date:
+        return 0, 0
 
-    # If the current day is past the paid_till_date's day in the current month,
-    # and paid_till_date is not None, then the current month is also pending.
-    if paid_till_date and current_date.day > paid_till_date.day:
-        pending_periods += 1
-    elif paid_till_date is None and current_date.day > 1:
-        pending_periods += 1
+    # Calculate the number of full months between first_pending_month_start and current_date
+    # This will count the number of months that are fully or partially pending.
+    delta_months = relativedelta(current_date, first_pending_month_start)
+    total_pending_months = delta_months.years * 12 + delta_months.months + 1 # +1 to include the current month
 
-    pending_amount = pending_periods * MONTHLY_FEE
+    months_per_period = {
+        'monthly': 1,
+        'quarterly': 3,
+        'half_yearly': 6,
+        'yearly': 12,
+    }[fees_period_type]
+
+    pending_periods = (total_pending_months + months_per_period - 1) // months_per_period
+    pending_amount = pending_periods * MONTHLY_FEE * months_per_period
 
     return max(0, pending_periods), pending_amount
 
@@ -92,11 +99,10 @@ def student_detail(request, roll_number):
             payment.payment_date = timezone.now().date()
             payment.save()
 
-            # Update student's paid_till_date
+            # Update student's paid_till_date based on fees_period
             if student.paid_till_date:
                 student.paid_till_date += relativedelta(months=payment.paid_for_months)
             else:
-                # If paid_till_date was null, set it to current date + paid_for_months
                 student.paid_till_date = timezone.now().date() + relativedelta(months=payment.paid_for_months)
             student.save()
             return redirect('student_detail', roll_number=student.roll_number)

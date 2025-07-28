@@ -4,28 +4,70 @@
     <div class="card">
         <h1>Pending Fees</h1>
         {% if pending_students %}
-            <ul>
+            <div class="student-list">
                 {% for item in pending_students %}
-                    <li>
-                        <i class="fas fa-user-clock"></i>
+                    <div class="student-card">
                         <div class="student-info">
                             <a href="{% url 'student_detail' item.student.roll_number %}">
-                                {{ item.student.name }} (Roll No: {{ item.student.roll_number }})
+                                <h3>{{ item.student.name }} (Roll No: {{ item.student.roll_number }})</h3>
                             </a>
-                            <small>Fees pending since: {{ item.student.paid_till_date|default:"N/A" }}</small><br>
-                            <small>Pending Periods: {{ item.pending_periods }} months</small><br>
-                            <small>Total Pending: ₹{{ item.pending_amount }}</small>
+                            <p><strong>Fees Period:</strong> {{ item.student.get_fees_period_display }}</p>
+                            <p><strong>Paid Till:</strong> {{ item.student.paid_till_date|date:"M d, Y" }}</p>
+                            <p><strong>Pending Periods:</strong> {{ item.pending_periods }}</p>
+                            <p><strong>Total Pending:</strong> ₹{{ item.pending_amount }}</p>
                         </div>
-                        {% with whatsapp_message="Dear "|add:item.student.name|add:", your fees are pending for "|add:item.pending_periods|stringformat:"s"|add:" months, totaling ₹"|add:item.pending_amount|stringformat:"s"|add:". Please pay as soon as possible. Thank you." %}
-                        <a href="https://wa.me/{{ item.student.phone_number }}?text={{ whatsapp_message|urlencode }}" class="whatsapp-button" target="_blank">
-                            <i class="fab fa-whatsapp"></i> WhatsApp
-                        </a>
-                        {% endwith %}
-                    </li>
+                        <div class="whatsapp-section">
+                            {% if item.student.phone_number1 or item.student.phone_number2 %}
+                                <button class="whatsapp-button" onclick="showPhoneNumberSelection(
+                                    '{{ item.student.phone_number1 }}',
+                                    '{{ item.student.phone_number2 }}',
+                                    '{{ item.student.name }}',
+                                    '{{ item.pending_periods }}',
+                                    '{{ item.pending_amount }}'
+                                )">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </button>
+                            {% else %}
+                                <span class="no-phone">No phone number</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
             <p>No students with pending fees.</p>
         {% endif %}
     </div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+    function showPhoneNumberSelection(phone1, phone2, studentName, pendingPeriods, pendingAmount) {
+        let message = `Dear ${studentName}, your fees are pending for ${pendingPeriods} periods, totaling ₹${pendingAmount}. Please pay as soon as possible. Thank you.`;
+        let selectedNumber = null;
+
+        if (phone1 && phone2) {
+            const choice = prompt(`Choose a phone number for ${studentName}:\n1. ${phone1}\n2. ${phone2}`);
+            if (choice === '1') {
+                selectedNumber = phone1;
+            } else if (choice === '2') {
+                selectedNumber = phone2;
+            } else {
+                alert("Invalid choice or cancelled.");
+                return;
+            }
+        } else if (phone1) {
+            selectedNumber = phone1;
+        } else if (phone2) {
+            selectedNumber = phone2;
+        } else {
+            alert("No phone numbers available for this student.");
+            return;
+        }
+
+        if (selectedNumber) {
+            window.open(`https://wa.me/${selectedNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+    }
+</script>
+{% endblock scripts %}

@@ -27,7 +27,8 @@ class Command(BaseCommand):
                 'student_class': 7,
                 'address': '456 Oak Ave',
                 'admission_offset_months': 6, # Admitted 6 months ago
-                'initial_months_paid': 4 # Paid for 4 months from admission
+                'initial_months_paid': 4, # Paid for 4 months from admission
+                'fees_period': 'monthly'
             },
             # Student admitted 3 months ago, paid for 3 months (due today)
             {
@@ -37,7 +38,8 @@ class Command(BaseCommand):
                 'student_class': 6,
                 'address': '789 Pine Ln',
                 'admission_offset_months': 3,
-                'initial_months_paid': 3
+                'initial_months_paid': 3,
+                'fees_period': 'quarterly'
             },
             # Student admitted 1 month ago, paid for 2 months (paid till next month)
             {
@@ -47,7 +49,8 @@ class Command(BaseCommand):
                 'student_class': 8,
                 'address': '101 Hero Way',
                 'admission_offset_months': 1,
-                'initial_months_paid': 2
+                'initial_months_paid': 2,
+                'fees_period': 'monthly'
             },
             # Student admitted today, paid for 1 month
             {
@@ -57,7 +60,8 @@ class Command(BaseCommand):
                 'student_class': 9,
                 'address': '202 Future Rd',
                 'admission_offset_months': 0,
-                'initial_months_paid': 1
+                'initial_months_paid': 1,
+                'fees_period': 'monthly'
             },
             # Another pending student (admitted 4 months ago, paid for 2 months)
             {
@@ -67,7 +71,8 @@ class Command(BaseCommand):
                 'student_class': 4,
                 'address': '303 Old St',
                 'admission_offset_months': 4,
-                'initial_months_paid': 2
+                'initial_months_paid': 2,
+                'fees_period': 'half_yearly'
             },
             # Another due soon student (admitted 2 months ago, paid for 2 months)
             {
@@ -77,7 +82,8 @@ class Command(BaseCommand):
                 'student_class': 10,
                 'address': '404 New Blvd',
                 'admission_offset_months': 2,
-                'initial_months_paid': 2
+                'initial_months_paid': 2,
+                'fees_period': 'yearly'
             },
         ]
 
@@ -91,7 +97,8 @@ class Command(BaseCommand):
                 phone_number2=config['phone_number2'],
                 student_class=config['student_class'],
                 address=config['address'],
-                paid_till_date=paid_till_date
+                paid_till_date=paid_till_date,
+                fees_period=config['fees_period']
             )
 
             Payment.objects.create(

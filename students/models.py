@@ -1,6 +1,13 @@
 from django.db import models
 
 class Student(models.Model):
+    FEES_PERIOD_CHOICES = [
+        ('monthly', 'Monthly'),
+        ('quarterly', 'Quarterly'),
+        ('half_yearly', 'Half-Yearly'),
+        ('yearly', 'Yearly'),
+    ]
+
     roll_number = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100)
     phone_number1 = models.CharField(max_length=15, blank=True, null=True)
@@ -8,6 +15,10 @@ class Student(models.Model):
     student_class = models.SmallIntegerField()
     address = models.CharField(max_length=255, blank=True)
     paid_till_date = models.DateField(null=False, blank=False)
+    fees_period = models.CharField(max_length=20, choices=FEES_PERIOD_CHOICES, default='quarterly')
+
+    class Meta:
+        unique_together = ('name', 'student_class')
 
     def __str__(self):
         return self.name

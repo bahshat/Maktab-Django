@@ -4,26 +4,66 @@
     <div class="card">
         <h1>Due Soon Fees</h1>
         {% if due_soon_students %}
-            <ul>
+            <div class="student-list">
                 {% for student in due_soon_students %}
-                    <li>
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div class="student-card">
                         <div class="student-info">
                             <a href="{% url 'student_detail' student.roll_number %}">
-                                {{ student.name }} (Roll No: {{ student.roll_number }})
+                                <h3>{{ student.name }} (Roll No: {{ student.roll_number }})</h3>
                             </a>
-                            <small>Due by: {{ student.paid_till_date }}</small>
+                            <p><strong>Due by:</strong> {{ student.paid_till_date|date:"M d, Y" }}</p>
                         </div>
-                        {% with whatsapp_message="Dear "|add:student.name|add:", your fees are due by "|add:student.paid_till_date|add:". Please pay as soon as possible. Thank you." %}
-                        <a href="https://wa.me/{{ student.phone_number }}?text={{ whatsapp_message|urlencode }}" class="whatsapp-button" target="_blank">
-                            <i class="fab fa-whatsapp"></i> WhatsApp
-                        </a>
-                        {% endwith %}
-                    </li>
+                        <div class="whatsapp-section">
+                            {% if student.phone_number1 or student.phone_number2 %}
+                                <button class="whatsapp-button" onclick="showPhoneNumberSelection(
+                                    '{{ student.phone_number1 }}',
+                                    '{{ student.phone_number2 }}',
+                                    '{{ student.name }}',
+                                    '{{ student.paid_till_date|date:"M d, Y" }}'
+                                )">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </button>
+                            {% else %}
+                                <span class="no-phone">No phone number</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
             <p>No students with fees due soon.</p>
         {% endif %}
     </div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+    function showPhoneNumberSelection(phone1, phone2, studentName, dueDate) {
+        let message = `Dear ${studentName}, your fees are due by ${dueDate}. Please pay as soon as possible. Thank you.`;
+        let selectedNumber = null;
+
+        if (phone1 && phone2) {
+            const choice = prompt(`Choose a phone number for ${studentName}:\n1. ${phone1}\n2. ${phone2}`);
+            if (choice === '1') {
+                selectedNumber = phone1;
+            } else if (choice === '2') {
+                selectedNumber = phone2;
+            } else {
+                alert("Invalid choice or cancelled.");
+                return;
+            }
+        } else if (phone1) {
+            selectedNumber = phone1;
+        } else if (phone2) {
+            selectedNumber = phone2;
+        } else {
+            alert("No phone numbers available for this student.");
+            return;
+        }
+
+        if (selectedNumber) {
+            window.open(`https://wa.me/${selectedNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+    }
+</script>
+{% endblock scripts %}
