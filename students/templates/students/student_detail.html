@@ -11,7 +11,7 @@
         <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> {{ student.address }}</p>
         <p><strong><i class="fas fa-calendar-alt"></i> Paid Till Date:</strong> 
             {% if student.paid_till_date %}
-                {{ student.paid_till_date }}
+                {{ student.paid_till_date|date:"M d, Y" }}
             {% else %}
                 Not Paid Yet
             {% endif %}
@@ -32,7 +32,7 @@
                 <tbody>
                     {% for payment in payments %}
                         <tr>
-                            <td>{{ payment.payment_date }}</td>
+                            <td>{{ payment.payment_date|date:"M d, Y" }}</td>
                             <td>{{ payment.amount_paid }}</td>
                             <td>{{ payment.paid_for_months }}</td>
                         </tr>

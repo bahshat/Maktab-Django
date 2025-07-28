@@ -19,12 +19,11 @@
                     ">
                         <div class="student-info" style="flex-grow: 1; text-align: left;">
                             <a href="{% url 'student_detail' item.student.roll_number %}" style="color: var(--text-light); text-decoration: none;">
-                                <h3 style="margin: 0; font-size: 1.2em; color: var(--text-light);">Roll: {{ item.student.roll_number }} - {{ item.student.name }}</h3>
+                                <h3 style="margin: 0; font-size: 1.2em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;">Roll: {{ item.student.roll_number }} - {{ item.student.name }}</h3>
                             </a>
-                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light);"><strong>Fees Period:</strong> {{ item.student.get_fees_period_display }}</p>
-                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light);"><strong>Paid Till:</strong> {{ item.student.paid_till_date|date:"M d, Y" }}</p>
-                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light);"><strong>Pending Periods:</strong> {{ item.pending_periods }}</p>
-                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light);"><strong>Total Pending:</strong> ₹{{ item.pending_amount }}</p>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;"><strong>Fees Period:</strong> {{ item.student.get_fees_period_display }}</p>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--text-light); text-align: left; padding-left: 0; margin-left: 0;"><strong>Paid Till:</strong> {{ item.student.paid_till_date|date:"M d, Y" }}</p>
+                            <p style="margin: 5px 0 0 0; font-size: 1.3em; color: var(--text-light); font-weight: bold; text-align: left; padding-left: 0; margin-left: 0;"><strong>Total Pending:</strong> ₹{{ item.pending_amount }}</p>
                         </div>
                         <div class="whatsapp-section">
                             {% if item.student.phone_number1 or item.student.phone_number2 %}
@@ -37,16 +36,18 @@
                                 )" style="
                                     background-color: #25D366;
                                     color: white;
-                                    padding: 10px 15px;
+                                    padding: 10px 20px; /* Increased padding */
                                     border: none;
                                     border-radius: 25px;
                                     cursor: pointer;
                                     font-size: 0.9em;
                                     display: flex;
                                     align-items: center;
+                                    justify-content: center; /* Center horizontally */
                                     margin-left: auto;
                                     text-decoration: none;
                                     transition: background-color 0.3s ease, transform 0.2s ease;
+                                    white-space: nowrap; /* Prevent text wrapping */
                                 ">
                                     <i class="fab fa-whatsapp" style="margin-right: 8px; font-size: 1.1em; color: white;"></i> WhatsApp
                                 </button>
